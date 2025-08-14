@@ -6,7 +6,9 @@ use App\Mail\VerificationCodeMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 
 class AdminController extends Controller
 {
@@ -62,6 +64,86 @@ class AdminController extends Controller
         }
 
         return back()->withErrors(['code' => 'Invalid Verification Code']);
+
+    }
+
+
+    public function admin_profile()
+    {
+        $id = Auth::user()->id;
+        $profileData = User::find($id);
+        return view('admin.admin_profile', compact('profileData'));
+    }
+
+    public function profile_store(Request $request)
+    {
+        $id = Auth::user()->id;
+        $data = User::find($id);
+
+        $data->name = $request->name;
+        $data->email = $request->email;
+        $data->phone = $request->phone;
+        $data->address = $request->address;
+        
+        $oldPhotoPath = $data->photo;
+
+        if ($request->file('photo')) {
+            $file = $request->file('photo');
+            $filename = time() . '.' .$file->getClientOriginalExtension();
+            // Storage::put('upload/' . $filename, file_get_contents($file));
+            $file->move(public_path('upload/'), $filename);
+            $data->photo = $filename;
+
+            if($oldPhotoPath && $oldPhotoPath !== $filename){
+                $this->deleteOldImage($oldPhotoPath);
+            }
+        }
+
+        $data->save();
+        
+            $notification = array(
+            'message' => 'Profile Updated Successfully',
+            'alert-type' => 'success',
+        );
+        return redirect()->back()->with($notification);
+
+    }
+
+    private function deleteOldImage(string $oldPhotoPath): void
+    {
+        $fullPath = public_path('upload/'.$oldPhotoPath);
+        if(file_exists($fullPath)){
+            unlink($fullPath);
+        }
+    }
+
+    public function password_update(Request $request)
+    {
+        $user = Auth::user();
+        $request->validate([
+            'old_password' => 'required',
+            'new_password' => 'required|confirmed'
+        ]);
+
+        if(!Hash::check($request->old_password,$user->password)){
+            $notification = array(
+                'message' =>  'Old Password does not match!',
+                'alert_type' => 'error'
+            );
+            return back()->with($notification);
+        }
+
+        User::whereID($user->id)->update([
+            'password' => Hash::make($request->new_password)
+
+        ]);
+        Auth::logout();
+
+        $notification = array(
+                'message' =>  'Password Updated Successfully!',
+                'alert_type' => 'success '
+            );
+            return redirect()->route('login')->with($notification);
 
     }
 }
