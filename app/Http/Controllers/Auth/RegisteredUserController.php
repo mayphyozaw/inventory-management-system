@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Mail\VerificationCodeMail;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 
@@ -27,13 +29,17 @@ class RegisteredUserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
+        
+        
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
+
+
 
         $user = User::create([
             'name' => $request->name,
@@ -42,9 +48,25 @@ class RegisteredUserController extends Controller
         ]);
 
         event(new Registered($user));
+        
+        $credentials = $request->only('email','password');
 
-        Auth::login($user);
+        if (Auth::attempt($credentials)) {
 
-        return redirect(route('dashboard', absolute: false));
+            $user = Auth::user();
+
+            $verificationCode = random_int(100000,999999);
+            
+            session(['verification_code' => $verificationCode, 'user_id' => $user->id]);
+
+            Mail::to($user->email)->send(new VerificationCodeMail($verificationCode));
+
+            Auth::login($user);
+
+            return redirect()->route('custom.verification.form')->with('status','Verification code send to your mail');
+            
+        }
+        return redirect()->back()->withErrors(['email'=>'Invaild Credential Provided']);
+        
     }
 }

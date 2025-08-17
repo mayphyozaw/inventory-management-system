@@ -5,7 +5,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('home.index');
 });
 
 Route::get('/dashboard', function () {
@@ -22,6 +22,8 @@ require __DIR__.'/auth.php';
 
 Route::get('/admin/logout',[AdminController::class,'admin_logout'])->name('admin.logout');
 Route::post('/admin/login',[AdminController::class,'admin_login'])->name('admin.login');
+
+Route::post('/admin/register',[AdminController::class,'admin_register'])->name('admin.register');
 
 Route::get('/verify',[AdminController::class,'showVerification'])->name('custom.verification.form');
 Route::post('/verify',[AdminController::class,'verificationVerify'])->name('custom.verification.verify');

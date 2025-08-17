@@ -23,23 +23,15 @@ class AdminController extends Controller
         return redirect('/login');
     }
 
+
+
     public function admin_login(Request $request)
     {
-        $credentials = $request->only('email','password');
 
-        if (Auth::attempt($credentials)) {
-            $user = Auth::user();
-
-            $verificationCode = random_int(100000,999999);
-            
-            session(['verification_code' => $verificationCode, 'user_id' => $user->id]);
-
-            Mail::to($user->email)->send(new VerificationCodeMail($verificationCode));
-
-            Auth::logout();
-
-            return redirect()->route('custom.verification.form')->with('status','Verification code send to your mail');
-            
+       if(Auth::attempt(['email'=>$request->email, 'password'=>$request->password]))
+       {
+           
+            return redirect()->intended('/dashboard');
         }
         return redirect()->back()->withErrors(['email'=>'Invaild Credential Provided']);
 
@@ -103,7 +95,7 @@ class AdminController extends Controller
         
             $notification = array(
             'message' => 'Profile Updated Successfully',
-            'alert-type' => 'success',
+            'alert_type' => 'success',
         );
         return redirect()->back()->with($notification);
 
