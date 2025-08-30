@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Clarify;
 use App\Models\Feature;
 use Illuminate\Http\Request;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
 
 class HomeController extends Controller
 {
@@ -69,4 +72,59 @@ class HomeController extends Controller
             );
             return redirect()->back()->with($notification);
     }
+
+
+    public function GetClarifies()
+    {
+        $clarify = Clarify::find(1);
+        return view('admin.backend.clarify.get_clarify', compact('clarify'));
+    }
+
+
+    public function UpdateClarifies(Request $request)
+    {
+        $clarify_id = $request->id;
+        $clarify = Clarify::find($clarify_id);
+
+        if($request->file('image')){
+            $image = $request->file('image');
+            $manager = new ImageManager(new Driver());
+            $name_gen = hexdec(uniqid()).'.'.$image->getClientOriginalExtension();
+            $img =$manager->read($image);
+            $img->resize(306,618)->save(public_path('upload/clarify/'.$name_gen));
+            $save_url = 'upload/clarify/'.$name_gen;
+
+            if(file_exists(public_path($clarify->image))){
+                @unlink(public_path($clarify->image));
+            }
+            
+            Clarify::find($clarify_id)->update([
+                'title' => $request->title,
+                'description' => $request->description,
+                'image' => $save_url,
+
+            ]);
+            $notification = array(
+                'message' =>  'Clarifies Updated with image successfully',
+                'alert_type' => 'success',
+            );
+            return redirect()->back()->with($notification);
+        }else{
+            Clarify::find($clarify_id)->update([
+                'title' => $request->title,
+                'description' => $request->description,
+                
+
+            ]);
+            $notification = array(
+                'message' =>  'Clarifies Updated without image successfully',
+                'alert_type' => 'success',
+            );
+            return redirect()->back()->with($notification);
+        }
+
+        
+    }
+
+    
 }

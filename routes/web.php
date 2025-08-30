@@ -71,4 +71,13 @@ Route::middleware('auth')->group(function () {
         
 
     });
+
+
+    Route::controller(HomeController::class)->group(function(){
+         Route::get('/get/clarifies','GetClarifies')->name('get.clarifies');
+         Route::post('/update/clarify','UpdateClarifies')->name('update.clarify');
+        
+        
+
+    });
 });
