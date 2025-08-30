@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\Backend\HomeController;
 use App\Http\Controllers\Backend\ReviewController;
 use App\Http\Controllers\Backend\SliderController;
 use App\Http\Controllers\ProfileController;
@@ -51,6 +52,22 @@ Route::middleware('auth')->group(function () {
     Route::controller(SliderController::class)->group(function(){
         Route::get('/get/slider','GetSlider')->name('get.slider');
         Route::post('/update/slider','UpdateSlider')->name('update.slider');
+        Route::post('/edit-slider/{id}','EditSlider');
+        Route::post('/edit-features/{id}','EditFeatures');
+        Route::post('/edit-reviews/{id}','EditReview');
+        Route::post('/edit-answers/{id}','EditAnswer');
+        
+
+    });
+
+
+    Route::controller(HomeController::class)->group(function(){
+         Route::get('/all/features','AllFeature')->name('all.feature');
+        Route::get('/add/feature','AddFeature')->name('add.feature');
+        Route::post('/store/feature','StoreFeature')->name('store.feature');
+        Route::get('/eidt/feature/{id}','EditFeature')->name('edit.feature');
+        Route::post('/update/feature','UpdateFeature')->name('update.feature');
+        Route::get('/delete/feature/{id}','DeleteFeature')->name('delete.feature');
         
 
     });

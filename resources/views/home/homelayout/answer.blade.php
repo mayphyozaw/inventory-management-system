@@ -1,7 +1,14 @@
 <div class="lonyo-section-padding4">
         <div class="container">
+
+            @php
+                 $title = App\Models\Title::find(1);
+            @endphp
             <div class="lonyo-section-title center">
-                <h2>Find answers to all questions below</h2>
+                <h2 id="answer-title" contenteditable="{{ auth()->check() ? 'true' : 'false' }}"
+                        data-id="{{ $title->id }}">{{ $title->answers }}
+                    </h2>
+                
             </div>
             <div class="lonyo-faq-shape"></div>
             <div class="lonyo-faq-wrap1">
