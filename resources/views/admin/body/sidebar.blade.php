@@ -107,6 +107,22 @@
                     </div>
                 </li>
 
+                <li>
+                    <a href="#sidebarError" data-bs-toggle="collapse">
+                        <i data-feather="alert-octagon"></i>
+                        <span>Usability Setup </span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <div class="collapse" id="sidebarError">
+                        <ul class="nav-second-level">
+                            <li>
+                                <a href="{{route('get.usability')}}" class="tp-link">Get Usability</a>
+                            </li>
+                            
+                        </ul>
+                    </div>
+                </li>
+
                 <li class="menu-title mt-2">General</li>
 
                 <li>
