@@ -134,6 +134,7 @@
                 let field = element.id === "review-title" ? "reviews" : "";
                 let newValue = element.innerText.trim();
 
+
                 fetch(`/edit-reviews/${reviewsId}`, {
                         method: "POST",
                         headers: {
@@ -166,7 +167,7 @@
     </script>
 
 
-<script type="text/javascript">
+    <script type="text/javascript">
         $(document).ready(function() {
             const answerTitleElement = document.getElementById("answer-title");
 
@@ -207,5 +208,50 @@
     </script>
 
 
+    <script type="text/javascript">
+        $(document).ready(function() {
 
+            function saveConnectChanges(element) {
+                let connectId = element.dataset.id;
+                let field = element.classList.contains("editable-title") ? "title" : "description";
+                let newValue = element.innerText.trim();
+
+
+                fetch(`/update-connect/${connectId}`, {
+                        method: "POST",
+                        headers: {
+                            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute(
+                                "content"),
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            [field]: newValue
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            console.log(`${field} updated successfully`);
+                        }
+                    })
+                    .catch(error => console.error("Error:", error));
+            }
+
+
+
+            document.addEventListener("keydown", function(e) {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    saveConnectChanges(e.target);
+                }
+            });
+
+            document.querySelectorAll(".editable-title, .editable-description").forEach(ele => {
+                ele.addEventListener("blur", function() {
+                    saveConnectChanges(ele);
+                });
+            });
+
+        });
+    </script>
 @endsection

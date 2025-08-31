@@ -68,20 +68,26 @@ Route::middleware('auth')->group(function () {
         Route::get('/eidt/feature/{id}','EditFeature')->name('edit.feature');
         Route::post('/update/feature','UpdateFeature')->name('update.feature');
         Route::get('/delete/feature/{id}','DeleteFeature')->name('delete.feature');
-        
-
     });
 
 
     Route::controller(HomeController::class)->group(function(){
          Route::get('/get/clarifies','GetClarifies')->name('get.clarifies');
          Route::post('/update/clarify','UpdateClarifies')->name('update.clarify');
-        
     });
 
      Route::controller(HomeController::class)->group(function(){
          Route::get('/get/usability','GetUsability')->name('get.usability');
          Route::post('/update/usability','UpdateUsability')->name('update.usability');
+    });
+
+
+    Route::controller(HomeController::class)->group(function(){
+         Route::get('/all/connects','AllConnect')->name('all.connect');
+        Route::get('/add/connect','AddConnect')->name('add.connect');
+        Route::post('/store/connect','StoreConnect')->name('store.connect');
+        Route::post('/update-connect/{id}','UpdateConnect');
+
         
     });
 });

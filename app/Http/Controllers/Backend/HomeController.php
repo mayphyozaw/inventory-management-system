@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
 use App\Models\Clarify;
+use App\Models\Connect;
 use App\Models\Feature;
 use App\Models\Usability;
 use Illuminate\Http\Request;
@@ -75,6 +76,7 @@ class HomeController extends Controller
     }
 
 
+    // Clarifies Section
     public function GetClarifies()
     {
         $clarify = Clarify::find(1);
@@ -180,6 +182,40 @@ class HomeController extends Controller
         
     }
 
+    //Connect Section
+
+    public function AllConnect()
+    {
+        $connect = Connect::latest()->get();
+        return view('admin.backend.connect.all_connect',compact('connect'));
+    }
+
+    public function AddConnect()
+    {
+        return view('admin.backend.connect.add_connect');
+    }
+
+    public function StoreConnect(Request $request)
+    {
+            Connect::create([
+                'title' => $request->title,
+                'description' => $request->description,
+            ]);
+
+            $notification = array(
+                'message' =>  'Connect Inserted successfully',
+                'alert_type' => 'success',
+            );
+            return redirect()->route('all.connect')->with($notification);
+    }
+
+    public function UpdateConnect(Request $request, $id)
+    {
+        $connect = Connect::findOrFail($id);
+
+        $connect->update($request->only(['title','description']));
+        return response()->json(['success'=>true, 'message'=>'Updated Successfully']);
+    }
 
     
 }
