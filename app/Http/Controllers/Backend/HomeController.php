@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use App\Models\Clarify;
 use App\Models\Connect;
+use App\Models\Faq;
 use App\Models\Feature;
 use App\Models\Usability;
 use Illuminate\Http\Request;
@@ -217,5 +218,63 @@ class HomeController extends Controller
         return response()->json(['success'=>true, 'message'=>'Updated Successfully']);
     }
 
-    
+    //Faq Section
+    public function AllFaq()
+    {
+        $faq = Faq::latest()->get();
+        return view('admin.backend.faq.all_faq',compact('faq'));
+    }
+
+    public function AddFaq()
+    {
+        return view('admin.backend.faq.add_faq');
+    }
+
+    public function StoreFaq(Request $request)
+    {
+            Faq::create([
+                'title' => $request->title,
+                'description' => $request->description,
+            ]);
+
+            $notification = array(
+                'message' =>  'Faq Inserted successfully',
+                'alert_type' => 'success',
+            );
+            return redirect()->route('all.faq')->with($notification);
+    }
+
+    public function EditFaq($id)
+    {
+        $faq = Faq::find($id);
+        return view('admin.backend.faq.edit_faq',compact('faq'));
+    }
+
+    public function UpdateFaq(Request $request)
+    {
+            $faq_id = $request->id;
+
+            Faq::find($faq_id)->update([
+                'title' => $request->title,
+                'description' => $request->description,
+            ]);
+
+            $notification = array(
+                'message' =>  'Faq Updated successfully',
+                'alert_type' => 'success',
+            );
+            return redirect()->route('all.faq')->with($notification);
+    }
+
+    public function DeleteFaq($id)
+    {
+
+        Faq::find($id)->delete();
+
+        $notification = array(
+                'message' =>  'Faq Deleted successfully',
+                'alert_type' => 'success',
+            );
+            return redirect()->back()->with($notification);
+    }
 }

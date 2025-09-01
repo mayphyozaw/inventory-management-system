@@ -65,7 +65,7 @@ Route::middleware('auth')->group(function () {
          Route::get('/all/features','AllFeature')->name('all.feature');
         Route::get('/add/feature','AddFeature')->name('add.feature');
         Route::post('/store/feature','StoreFeature')->name('store.feature');
-        Route::get('/eidt/feature/{id}','EditFeature')->name('edit.feature');
+        Route::get('/edit/feature/{id}','EditFeature')->name('edit.feature');
         Route::post('/update/feature','UpdateFeature')->name('update.feature');
         Route::get('/delete/feature/{id}','DeleteFeature')->name('delete.feature');
     });
@@ -87,6 +87,21 @@ Route::middleware('auth')->group(function () {
         Route::get('/add/connect','AddConnect')->name('add.connect');
         Route::post('/store/connect','StoreConnect')->name('store.connect');
         Route::post('/update-connect/{id}','UpdateConnect');
+        
+
+
+        
+    });
+
+    Route::controller(HomeController::class)->group(function(){
+        Route::get('/all/faq','AllFaq')->name('all.faq');
+        Route::get('/add/faq','AddFaq')->name('add.faq');
+        Route::post('/store/faq','StoreFaq')->name('store.faq');
+        Route::get('/edit/faq/{id}','EditFaq')->name('edit.faq');
+        Route::post('/update/faq','UpdateFaq')->name('update.faq');
+        Route::get('/delete/faq/{id}','DeleteFaq')->name('delete.faq');
+
+
 
         
     });
