@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\App;
 use App\Models\Clarify;
 use App\Models\Connect;
 use App\Models\Faq;
@@ -276,5 +277,48 @@ class HomeController extends Controller
                 'alert_type' => 'success',
             );
             return redirect()->back()->with($notification);
+    }
+
+
+    public function UpdateApps(Request $request, $id)
+    {
+        $app = App::findOrFail($id);
+
+        $app->update($request->only(['title','description']));
+        return response()->json(['success'=>true, 'message'=>'Updated Successfully']);
+    }
+
+    public function UpdateAppsImage(Request $request, $id)
+    {
+        $apps = App::findOrFail($id);
+
+
+        if($request->file('image')){
+            $image = $request->file('image');
+            $manager = new ImageManager(new Driver());
+            $name_gen = hexdec(uniqid()).'.'.$image->getClientOriginalExtension();
+            $img =$manager->read($image);
+            $img->resize(306,481)->save(public_path('upload/apps/'.$name_gen));
+            $save_url = 'upload/apps/'.$name_gen;
+
+            if(file_exists(public_path($apps->image))){
+                @unlink(public_path($apps->image));
+            }
+
+            $apps->update([
+                'image' => $save_url,
+            ]);
+            return response()->json([
+                'success' => true,
+                'image_url' => asset($save_url),
+                'message' => 'Image Updated Successfully',
+
+            ]);
+            
+        }
+
+        return response()->json(['success' => false, 'message' => 'Image Upload Failed'], 400);
+
+        
     }
 }

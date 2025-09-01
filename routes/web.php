@@ -100,9 +100,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/edit/faq/{id}','EditFaq')->name('edit.faq');
         Route::post('/update/faq','UpdateFaq')->name('update.faq');
         Route::get('/delete/faq/{id}','DeleteFaq')->name('delete.faq');
+        
+    });
 
-
-
+    Route::controller(HomeController::class)->group(function(){
+        Route::post('/update-app/{id}','UpdateApps');
+        Route::post('/update-app-image/{id}','UpdateAppsImage');
+        
         
     });
 });

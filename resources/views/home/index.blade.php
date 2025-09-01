@@ -254,4 +254,87 @@
 
         });
     </script>
+
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+
+            function saveAppsChanges(element) {
+                let appId = element.dataset.id;
+                let field = element.classList.contains("editableApps-title") ? "title" : "description";
+                let newValue = element.innerText.trim();
+
+
+                fetch(`/update-app/${appId}`, {
+                        method: "POST",
+                        headers: {
+                            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute(
+                                "content"),
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            [field]: newValue
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            console.log(`${field} updated successfully`);
+                        }
+                    })
+                    .catch(error => console.error("Error:", error));
+            }
+
+
+
+            document.addEventListener("keydown", function(e) {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    saveAppsChanges(e.target);
+                }
+            });
+
+            document.querySelectorAll(".editableApps-title, .editableApps-description").forEach(elem => {
+                elem.addEventListener("blur", function() {
+                    saveAppsChanges(elem);
+                });
+            });
+
+            // Image Uploaded function start
+
+            let imageElement = document.getElementById("appImage");
+            let uploadInput = document.getElementById("uploadImage");
+
+            imageElement.addEventListener("click", function() {
+                @if (auth()->check())
+                    uploadInput.click();
+                @endif
+            });
+
+            uploadInput.addEventListener("change", function() {
+                    let file = this.files[0];
+                    if (!file) return;
+
+                    let formData = new FormData();
+                    formData.append("image", file);
+                    formData.append("_token", document.querySelector('meta[name="csrf-token"]').getAttribute(
+                        "content"));
+
+                fetch("/update-app-image/1", {
+                        method: "POST",
+                        body: formData
+                
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                    if (data.success) {
+                        imageElement.src = data.image_url;
+                        console.log(`Image updated successfully`);
+                    }
+                })
+                .catch(error => console.error("Error:", error));
+            });
+
+        });
+    </script>
 @endsection
